@@ -1,0 +1,98 @@
+"""
+Person module for Royal Stay Hotel Management System.
+This module defines the Person class, which serves as the parent class for Guest and Employee.
+"""
+
+class Person:
+    """
+    Base class representing a person in the hotel management system.
+    
+    This class serves as a parent class for Guest and Employee, containing common
+    attributes and methods related to personal information.
+    
+    Attributes:
+        _person_id (int): Unique identifier for the person
+        _name (str): Full name of the person
+        _email (str): Email address of the person
+        _phone (str): Phone number of the person
+    """
+    
+    def __init__(self, person_id, name, email, phone):
+        """
+        Initialize a new Person object.
+        
+        Args:
+            person_id (int): Unique identifier for the person
+            name (str): Full name of the person
+            email (str): Email address of the person
+            phone (str): Phone number of the person
+        """
+        # Protected attributes (accessible to child classes)
+        self._person_id = person_id
+        self._name = name
+        self._email = email
+        self._phone = phone
+    
+    # Getter and setter methods
+    def get_name(self):
+        """
+        Get the person's name.
+        
+        Returns:
+            str: The person's name
+        """
+        return self._name
+    
+    def set_name(self, name):
+        """
+        Set the person's name.
+        
+        Args:
+            name (str): The new name for the person
+        """
+        self._name = name
+    
+    def get_email(self):
+        """
+        Get the person's email.
+        
+        Returns:
+            str: The person's email address
+        """
+        return self._email
+    
+    def set_email(self, email):
+        """
+        Set the person's email.
+        
+        Args:
+            email (str): The new email address for the person
+        """
+        self._email = email
+    
+    def get_phone(self):
+        """
+        Get the person's phone number.
+        
+        Returns:
+            str: The person's phone number
+        """
+        return self._phone
+    
+    def set_phone(self, phone):
+        """
+        Set the person's phone number.
+        
+        Args:
+            phone (str): The new phone number for the person
+        """
+        self._phone = phone
+    
+    def __str__(self):
+        """
+        Return a string representation of the Person object.
+        
+        Returns:
+            str: A string containing the person's ID, name, email, and phone
+        """
+        return f"Person ID: {self._person_id}, Name: {self._name}, Email: {self._email}, Phone: {self._phone}"
