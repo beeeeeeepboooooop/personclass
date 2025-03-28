@@ -1,0 +1,457 @@
+"""
+HotelSystem module for Royal Stay Hotel Management System.
+This module defines the HotelSystem class which serves as the central coordinator.
+"""
+
+from datetime import datetime
+from person import Person
+from guest import Guest
+from employee import Employee, Manager
+from room import Room
+from room_types import SingleRoom, DoubleRoom, SuiteRoom
+from booking import Booking
+from service import Service
+from payment import Payment
+from invoice import Invoice
+from loyalty_program import LoyaltyProgram
+
+class HotelSystem:
+    """
+    Class representing the central hotel management system.
+    
+    This class coordinates all operations and manages the relationships between
+    different entities in the hotel system.
+    
+    Attributes:
+        _rooms (dict): Dictionary of room objects indexed by room number
+        _services (dict): Dictionary of service objects indexed by service ID
+        _guests (dict): Dictionary of guest objects indexed by guest ID
+        _employees (dict): Dictionary of employee objects indexed by employee ID
+        _bookings (dict): Dictionary of booking objects indexed by booking ID
+        _payments (dict): Dictionary of payment objects indexed by payment ID
+        _invoices (dict): Dictionary of invoice objects indexed by invoice ID
+        _loyalty_program (LoyaltyProgram): The hotel's loyalty program
+        _next_ids (dict): Dictionary to track next available IDs for various entities
+    """
+    
+    def __init__(self):
+        """
+        Initialize a new HotelSystem object.
+        """
+        self._rooms = {}
+        self._services = {}
+        self._guests = {}
+        self._employees = {}
+        self._bookings = {}
+        self._payments = {}
+        self._invoices = {}
+        self._loyalty_program = LoyaltyProgram()
+        
+        # Initialize ID counters
+        self._next_ids = {
+            "person": 1,
+            "booking": 1,
+            "service": 1,
+            "payment": 1,
+            "invoice": 1,
+        }
+    
+    # ROOM MANAGEMENT
+    
+    def add_room(self, room):
+        """
+        Add a room to the system.
+        
+        Args:
+            room (Room): Room object to add
+            
+        Returns:
+            bool: True if the room was added successfully
+        """
+        if room.room_number in self._rooms:
+            print(f"Room {room.room_number} already exists in the system")
+            return False
+        
+        self._rooms[room.room_number] = room
+        print(f"Room {room.room_number} added to the system")
+        return True
+    
+    def remove_room(self, room_number):
+        """
+        Remove a room from the system.
+        
+        Args:
+            room_number (int): Room number to remove
+            
+        Returns:
+            bool: True if the room was removed successfully
+        """
+        if room_number not in self._rooms:
+            print(f"Room {room_number} does not exist in the system")
+            return False
+        
+        del self._rooms[room_number]
+        print(f"Room {room_number} removed from the system")
+        return True
+    
+    def add_single_room(self, room_number, price, amenities=None, is_single_bed=True, max_occupancy=1, has_work_desk=False):
+        """
+        Create and add a single room to the system.
+        
+        Args:
+            room_number (int): Room number
+            price (float): Price per night
+            amenities (list, optional): List of amenities
+            is_single_bed (bool, optional): Whether the room has a single bed
+            max_occupancy (int, optional): Maximum occupancy
+            has_work_desk (bool, optional): Whether the room has a work desk
+            
+        Returns:
+            SingleRoom: The created room if successful, None otherwise
+        """
+        if room_number in self._rooms:
+            print(f"Room {room_number} already exists in the system")
+            return None
+        
+        room = SingleRoom(room_number, amenities, price, is_single_bed, max_occupancy, has_work_desk)
+        self._rooms[room_number] = room
+        print(f"Single Room {room_number} added to the system")
+        return room
+    
+    def add_double_room(self, room_number, price, amenities=None, number_of_beds=2, has_balcony=False, is_connected=False):
+        """
+        Create and add a double room to the system.
+        
+        Args:
+            room_number (int): Room number
+            price (float): Price per night
+            amenities (list, optional): List of amenities
+            number_of_beds (int, optional): Number of beds
+            has_balcony (bool, optional): Whether the room has a balcony
+            is_connected (bool, optional): Whether the room is connected to another room
+            
+        Returns:
+            DoubleRoom: The created room if successful, None otherwise
+        """
+        if room_number in self._rooms:
+            print(f"Room {room_number} already exists in the system")
+            return None
+        
+        room = DoubleRoom(room_number, amenities, price, number_of_beds, has_balcony, is_connected)
+        self._rooms[room_number] = room
+        print(f"Double Room {room_number} added to the system")
+        return room
+    
+    def add_suite_room(self, room_number, price, amenities=None, number_of_rooms=2, has_kitchen=False, has_jacuzzi=False):
+        """
+        Create and add a suite room to the system.
+        
+        Args:
+            room_number (int): Room number
+            price (float): Price per night
+            amenities (list, optional): List of amenities
+            number_of_rooms (int, optional): Number of separate rooms in the suite
+            has_kitchen (bool, optional): Whether the suite has a kitchen
+            has_jacuzzi (bool, optional): Whether the suite has a jacuzzi
+            
+        Returns:
+            SuiteRoom: The created room if successful, None otherwise
+        """
+        if room_number in self._rooms:
+            print(f"Room {room_number} already exists in the system")
+            return None
+        
+        room = SuiteRoom(room_number, amenities, price, number_of_rooms, has_kitchen, has_jacuzzi)
+        self._rooms[room_number] = room
+        print(f"Suite Room {room_number} added to the system")
+        return room
+    
+    def find_available_rooms(self, check_in_date, check_out_date, room_type=None):
+        """
+        Find available rooms for a given date range.
+        
+        Args:
+            check_in_date (datetime): Check-in date
+            check_out_date (datetime): Check-out date
+            room_type (str, optional): Room type to filter by (e.g., "Single", "Double", "Suite")
+            
+        Returns:
+            list: List of available Room objects
+        """
+        available_rooms = []
+        
+        for room in self._rooms.values():
+            # Check if room matches the requested type (if specified)
+            if room_type and room._room_type != room_type:
+                continue
+            
+            # Check if room is available or if its current booking doesn't conflict
+            if not room._is_available:
+                # For unavailable rooms, check if there's an overlap with existing bookings
+                is_available_for_dates = True
+                
+                for booking in self._bookings.values():
+                    if booking.room._room_number == room._room_number and booking._status == "Confirmed":
+                        # Check for date overlap
+                        if (check_in_date < booking._check_out_date and check_out_date > booking._check_in_date):
+                            is_available_for_dates = False
+                            break
+                
+                if not is_available_for_dates:
+                    continue
+            
+            available_rooms.append(room)
+        
+        print(f"Found {len(available_rooms)} available rooms for the selected dates")
+        return available_rooms
+    
+    # GUEST MANAGEMENT
+    
+    def register_guest(self, name, email, phone):
+        """
+        Register a new guest in the system.
+        
+        Args:
+            name (str): Guest name
+            email (str): Guest email
+            phone (str): Guest phone number
+            
+        Returns:
+            Guest: The registered Guest object
+        """
+        person_id = self._get_next_id("person")
+        guest = Guest(person_id, name, email, phone)
+        self._guests[person_id] = guest
+        
+        guest.create_account()
+        return guest
+    
+    # EMPLOYEE MANAGEMENT
+    
+    def hire_employee(self, name, email, phone, position, salary):
+        """
+        Hire a new employee.
+        
+        Args:
+            name (str): Employee name
+            email (str): Employee email
+            phone (str): Employee phone number
+            position (str): Job position
+            salary (float): Annual salary
+            
+        Returns:
+            Employee: The hired Employee object
+        """
+        person_id = self._get_next_id("person")
+        employee = Employee(person_id, name, email, phone, position, salary)
+        self._employees[person_id] = employee
+        
+        print(f"Employee hired: {name} as {position}")
+        return employee
+    
+    def hire_manager(self, name, email, phone, salary, department):
+        """
+        Hire a new manager.
+        
+        Args:
+            name (str): Manager name
+            email (str): Manager email
+            phone (str): Manager phone number
+            salary (float): Annual salary
+            department (str): Department to manage
+            
+        Returns:
+            Manager: The hired Manager object
+        """
+        person_id = self._get_next_id("person")
+        manager = Manager(person_id, name, email, phone, salary, department)
+        self._employees[person_id] = manager
+        
+        print(f"Manager hired: {name} for {department} department")
+        return manager
+    
+    # BOOKING MANAGEMENT
+    
+    def make_booking(self, guest, room, check_in_date, check_out_date):
+        """
+        Create a new booking.
+        
+        Args:
+            guest (Guest): Guest making the booking
+            room (Room): Room to book
+            check_in_date (datetime): Check-in date
+            check_out_date (datetime): Check-out date
+            
+        Returns:
+            Booking: The created Booking object if successful, None otherwise
+        """
+        # Validate dates
+        if check_in_date >= check_out_date:
+            print("Error: Check-out date must be after check-in date")
+            return None
+        
+        # Check if room is available for these dates
+        available_rooms = self.find_available_rooms(check_in_date, check_out_date)
+        if room not in available_rooms:
+            print(f"Room {room._room_number} is not available for the selected dates")
+            return None
+        
+        # Create booking
+        booking_id = self._get_next_id("booking")
+        booking = Booking(booking_id, guest, room, check_in_date, check_out_date)
+        self._bookings[booking_id] = booking
+        
+        # Send confirmation
+        booking.send_confirmation()
+        
+        return booking
+    
+    def cancel_booking(self, booking_id):
+        """
+        Cancel a booking.
+        
+        Args:
+            booking_id (int): ID of the booking to cancel
+            
+        Returns:
+            bool: True if the booking was cancelled successfully
+        """
+        if booking_id not in self._bookings:
+            print(f"Booking {booking_id} not found")
+            return False
+        
+        booking = self._bookings[booking_id]
+        return booking.cancel()
+    
+    # SERVICE MANAGEMENT
+    
+    def request_service(self, guest, service_type, description, price, booking=None):
+        """
+        Request a new service.
+        
+        Args:
+            guest (Guest): Guest requesting the service
+            service_type (str): Type of service
+            description (str): Description of the service
+            price (float): Price of the service
+            booking (Booking, optional): Associated booking
+            
+        Returns:
+            Service: The created Service object
+        """
+        service_id = self._get_next_id("service")
+        service = Service(service_id, service_type, description, price)
+        self._services[service_id] = service
+        
+        service.create_request(guest, booking)
+        return service
+    
+    # PAYMENT MANAGEMENT
+    
+    def process_payment(self, booking, payment_method):
+        """
+        Process a payment for a booking.
+        
+        Args:
+            booking (Booking): Booking to process payment for
+            payment_method (str): Method of payment
+            
+        Returns:
+            Payment: The created Payment object
+        """
+        payment_id = self._get_next_id("payment")
+        payment = Payment(payment_id, booking, booking.total_price, payment_method)
+        self._payments[payment_id] = payment
+        
+        payment.process_payment()
+        
+        # Generate invoice
+        self.generate_invoice(booking)
+        
+        return payment
+    
+    # INVOICE MANAGEMENT
+    
+    def generate_invoice(self, booking):
+        """
+        Generate an invoice for a booking.
+        
+        Args:
+            booking (Booking): Booking to generate invoice for
+            
+        Returns:
+            Invoice: The created Invoice object
+        """
+        invoice_id = self._get_next_id("invoice")
+        invoice = Invoice(invoice_id, booking)
+        self._invoices[invoice_id] = invoice
+        
+        # Apply loyalty discount if applicable
+        if booking.guest._loyalty_status == "Gold":
+            invoice.apply_discount(percentage=10)
+        elif booking.guest._loyalty_status == "Platinum":
+            invoice.apply_discount(percentage=15)
+        
+        # Generate and print the invoice
+        invoice.generate_invoice()
+        
+        return invoice
+    
+    # LOYALTY PROGRAM MANAGEMENT
+    
+    def redeem_reward(self, guest, reward_id):
+        """
+        Redeem a loyalty reward for a guest.
+        
+        Args:
+            guest (Guest): Guest redeeming the reward
+            reward_id (str): ID of the reward to redeem
+            
+        Returns:
+            bool: True if the redemption was successful
+        """
+        return self._loyalty_program.redeem_reward(guest, reward_id)
+    
+    def get_guest_available_rewards(self, guest):
+        """
+        Get rewards available to a specific guest.
+        
+        Args:
+            guest (Guest): The guest to check rewards for
+            
+        Returns:
+            dict: Available rewards
+        """
+        return self._loyalty_program.get_available_rewards(guest._loyalty_points)
+    
+    # UTILITY METHODS
+    
+    def _get_next_id(self, entity_type):
+        """
+        Get the next available ID for a given entity type.
+        
+        Args:
+            entity_type (str): Type of entity (person, booking, etc.)
+            
+        Returns:
+            int: Next available ID
+        """
+        next_id = self._next_ids[entity_type]
+        self._next_ids[entity_type] += 1
+        return next_id
+    
+    def __str__(self):
+        """
+        Return a string representation of the HotelSystem object.
+        
+        Returns:
+            str: A string containing the system details
+        """
+        return (f"Royal Stay Hotel Management System\n"
+                f"Rooms: {len(self._rooms)}\n"
+                f"Guests: {len(self._guests)}\n"
+                f"Employees: {len(self._employees)}\n"
+                f"Bookings: {len(self._bookings)}\n"
+                f"Services: {len(self._services)}\n"
+                f"Payments: {len(self._payments)}\n"
+                f"Invoices: {len(self._invoices)}")
