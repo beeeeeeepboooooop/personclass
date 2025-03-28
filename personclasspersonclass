@@ -2,7 +2,6 @@
 Person module for Royal Stay Hotel Management System.
 This module defines the Person class, which serves as the parent class for Guest and Employee.
 """
-
 class Person:
     """
     Base class representing a person in the hotel management system.
@@ -11,7 +10,7 @@ class Person:
     attributes and methods related to personal information.
     
     Attributes:
-        _person_id (int): Unique identifier for the person
+        *person*id (int): Unique identifier for the person
         _name (str): Full name of the person
         _email (str): Email address of the person
         _phone (str): Phone number of the person
@@ -28,10 +27,10 @@ class Person:
             phone (str): Phone number of the person
         """
         # Protected attributes (accessible to child classes)
-        self._person_id = person_id
-        self._name = name
-        self._email = email
-        self._phone = phone
+        self._person_id = person_id  # storing the id with underscore to show it's protected or something
+        self._name = name  # saving the person's name
+        self._email = email  # gotta store their email for contact info
+        self._phone = phone  # phone number for calling them I guess
     
     # Getter and setter methods
     def get_name(self):
@@ -41,7 +40,7 @@ class Person:
         Returns:
             str: The person's name
         """
-        return self._name
+        return self._name  # just returns the name we stored earlier
     
     def set_name(self, name):
         """
@@ -50,7 +49,7 @@ class Person:
         Args:
             name (str): The new name for the person
         """
-        self._name = name
+        self._name = name  # changes the name to whatever new one we got
     
     def get_email(self):
         """
@@ -59,7 +58,7 @@ class Person:
         Returns:
             str: The person's email address
         """
-        return self._email
+        return self._email  # gives back the email address we stored
     
     def set_email(self, email):
         """
@@ -68,7 +67,7 @@ class Person:
         Args:
             email (str): The new email address for the person
         """
-        self._email = email
+        self._email = email  # updates their email if they changed it or stuff
     
     def get_phone(self):
         """
@@ -77,7 +76,7 @@ class Person:
         Returns:
             str: The person's phone number
         """
-        return self._phone
+        return self._phone  # returns their phone number so we can contact them
     
     def set_phone(self, phone):
         """
@@ -86,7 +85,7 @@ class Person:
         Args:
             phone (str): The new phone number for the person
         """
-        self._phone = phone
+        self._phone = phone  # updates the phone number in case they got a new one
     
     def __str__(self):
         """
@@ -95,4 +94,4 @@ class Person:
         Returns:
             str: A string containing the person's ID, name, email, and phone
         """
-        return f"Person ID: {self._person_id}, Name: {self._name}, Email: {self._email}, Phone: {self._phone}"
+        return f"Person ID: {self._person_id}, Name: {self._name}, Email: {self._email}, Phone: {self._phone}"  # prints out all their info in a nice format using f-strings which are pretty cool
