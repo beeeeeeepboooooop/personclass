@@ -3,8 +3,8 @@ Employee module for Royal Stay Hotel Management System.
 This module defines the Employee and Manager classes that inherit from Person.
 """
 
-from datetime import datetime
-from person import Person
+from datetime import datetime  # importing datetime to keep track of when employees join
+from person import Person  # getting our Person class that we made before
 
 class Employee(Person):
     """
@@ -31,12 +31,12 @@ class Employee(Person):
             salary (float): Annual salary
         """
         # Call the parent class constructor
-        super().__init__(person_id, name, email, phone)
+        super().__init__(person_id, name, email, phone)  # calling Person's init to set up the basic stuff
         
         # Employee-specific attributes
-        self._position = position
-        self._salary = salary
-        self._joining_date = datetime.now()
+        self._position = position  # what job they do at the hotel
+        self._salary = salary  # how much they make per year
+        self._joining_date = datetime.now()  # when they started working, just setting to now
     
     def assign_tasks(self, tasks):
         """
@@ -48,10 +48,10 @@ class Employee(Person):
         Returns:
             bool: True if tasks were assigned successfully
         """
-        print(f"Tasks assigned to {self._name} ({self._position}):")
-        for i, task in enumerate(tasks, 1):
-            print(f"  {i}. {task}")
-        return True
+        print(f"Tasks assigned to {self._name} ({self._position}):")  # prints who's getting the tasks
+        for i, task in enumerate(tasks, 1):  # loops through the list with numbers starting at 1
+            print(f"  {i}. {task}")  # prints each task with a number
+        return True  # says it worked
     
     def process_request(self, request):
         """
@@ -63,9 +63,9 @@ class Employee(Person):
         Returns:
             bool: True if the request was processed successfully
         """
-        print(f"{self._name} ({self._position}) is processing request: {request}")
-        print("Request processed successfully.")
-        return True
+        print(f"{self._name} ({self._position}) is processing request: {request}")  # shows who's handling what request
+        print("Request processed successfully.")  # says it's done
+        return True  # everything went ok
     
     def __str__(self):
         """
@@ -75,13 +75,13 @@ class Employee(Person):
             str: A string containing the employee details
         """
         # Get base information from parent class
-        base_info = super().__str__()
+        base_info = super().__str__()  # gets the basic info from Person class
         
         # Add employee-specific details
-        return (f"{base_info}\n"
-                f"Position: {self._position}\n"
-                f"Salary: ${self._salary:.2f}\n"
-                f"Joined: {self._joining_date.strftime('%Y-%m-%d')}")
+        return (f"{base_info}\n"  # starts with the Person info
+                f"Position: {self._position}\n"  # adds their job title
+                f"Salary: ${self._salary:.2f}\n"  # shows how much they make with 2 decimal places
+                f"Joined: {self._joining_date.strftime('%Y-%m-%d')}")  # shows when they started working
 
 
 class Manager(Employee):
@@ -108,11 +108,11 @@ class Manager(Employee):
             department (str): Department managed
         """
         # Call the parent class constructor with position="Manager"
-        super().__init__(person_id, name, email, phone, f"{department} Manager", salary)
+        super().__init__(person_id, name, email, phone, f"{department} Manager", salary)  # calls Employee init with position as "[department] Manager"
         
         # Manager-specific attributes
-        self._department = department
-        self._subordinates = []
+        self._department = department  # which department they're in charge of
+        self._subordinates = []  # empty list for people who work under them
     
     def add_subordinate(self, employee):
         """
@@ -124,13 +124,13 @@ class Manager(Employee):
         Returns:
             bool: True if the employee was added successfully
         """
-        if employee not in self._subordinates:
-            self._subordinates.append(employee)
-            print(f"{employee.get_name()} added to {self._name}'s team in {self._department} department")
-            return True
+        if employee not in self._subordinates:  # check if they're already on the team
+            self._subordinates.append(employee)  # add them to the team list
+            print(f"{employee.get_name()} added to {self._name}'s team in {self._department} department")  # success message
+            return True  # it worked
         else:
-            print(f"{employee.get_name()} is already in {self._name}'s team")
-            return False
+            print(f"{employee.get_name()} is already in {self._name}'s team")  # they're already there
+            return False  # didn't add them because they're already there
     
     def remove_subordinate(self, employee):
         """
@@ -142,13 +142,13 @@ class Manager(Employee):
         Returns:
             bool: True if the employee was removed successfully
         """
-        if employee in self._subordinates:
-            self._subordinates.remove(employee)
-            print(f"{employee.get_name()} removed from {self._name}'s team")
-            return True
+        if employee in self._subordinates:  # check if they're actually on the team
+            self._subordinates.remove(employee)  # take them off the team list
+            print(f"{employee.get_name()} removed from {self._name}'s team")  # tell user it worked
+            return True  # success
         else:
-            print(f"{employee.get_name()} is not in {self._name}'s team")
-            return False
+            print(f"{employee.get_name()} is not in {self._name}'s team")  # they weren't even on the team
+            return False  # couldn't remove them
     
     def approve_budget(self, amount, purpose):
         """
@@ -161,9 +161,9 @@ class Manager(Employee):
         Returns:
             bool: True if the budget was approved
         """
-        print(f"Budget Request: ${amount:.2f} for {purpose}")
-        print(f"Approved by: {self._name}, {self._department} Manager")
-        return True
+        print(f"Budget Request: ${amount:.2f} for {purpose}")  # shows the budget request details
+        print(f"Approved by: {self._name}, {self._department} Manager")  # who approved it
+        return True  # managers always say yes I guess lol
     
     def evaluate_staff(self, employee, rating, comments):
         """
@@ -177,11 +177,11 @@ class Manager(Employee):
         Returns:
             bool: True if the evaluation was completed successfully
         """
-        print(f"Performance Evaluation for {employee.get_name()}:")
-        print(f"Rating: {rating}/5")
-        print(f"Comments: {comments}")
-        print(f"Evaluated by: {self._name}, {self._department} Manager")
-        return True
+        print(f"Performance Evaluation for {employee.get_name()}:")  # header for the evaluation
+        print(f"Rating: {rating}/5")  # their score out of 5
+        print(f"Comments: {comments}")  # feedback about their work
+        print(f"Evaluated by: {self._name}, {self._department} Manager")  # who did the evaluation
+        return True  # completed successfully
     
     def __str__(self):
         """
@@ -191,9 +191,9 @@ class Manager(Employee):
             str: A string containing the manager details
         """
         # Get base information from parent class
-        base_info = super().__str__()
+        base_info = super().__str__()  # get all the Employee info first
         
         # Add manager-specific details
-        return (f"{base_info}\n"
-                f"Department: {self._department}\n"
-                f"Team Size: {len(self._subordinates)} employee(s)")
+        return (f"{base_info}\n"  # start with Employee info
+                f"Department: {self._department}\n"  # which department they manage
+                f"Team Size: {len(self._subordinates)} employee(s)")  # how many people work for them
