@@ -124,3 +124,60 @@ class LoyaltyProgram:
         for reward_id, reward_info in self._reward_options.items():
             if points >= reward_info["points_required"]:
                 available_rewards[reward_id] = reward_info
+        
+        return available_rewards
+    
+    def redeem_reward(self, guest, reward_id):
+        """
+        Redeem a reward for a guest.
+        
+        Args:
+            guest: Guest redeeming the reward
+            reward_id (str): ID of the reward to redeem
+            
+        Returns:
+            bool: True if the redemption was successful
+        """
+        if reward_id not in self._reward_options:
+            print(f"Invalid reward ID: {reward_id}")
+            return False
+        
+        reward = self._reward_options[reward_id]
+        points_required = reward["points_required"]
+        
+        if guest.loyalty_points < points_required:
+            print(f"Insufficient points. Required: {points_required}, Available: {guest.loyalty_points}")
+            return False
+        
+        # Redeem points from guest's account
+        success = guest.redeem_points(points_required)
+        
+        if success:
+            print(f"Reward redeemed: {reward['description']}")
+            return True
+        else:
+            return False
+    
+    def __str__(self):
+        """
+        Return a string representation of the LoyaltyProgram object.
+        
+        Returns:
+            str: A string containing the loyalty program details
+        """
+        # Format points scheme
+        points_str = "Points Earning:\n"
+        for category, rate in self._points_scheme.items():
+            points_str += f"- {category.capitalize()}: {rate} point(s) per $1\n"
+        
+        # Format status thresholds
+        status_str = "\nLoyalty Status Levels:\n"
+        for status, threshold in self._status_thresholds.items():
+            status_str += f"- {status}: {threshold}+ points\n"
+        
+        # Format reward options
+        rewards_str = "\nReward Options:\n"
+        for reward_id, reward_info in self._reward_options.items():
+            rewards_str += f"- {reward_info['description']}: {reward_info['points_required']} points\n"
+        
+        return "ROYAL STAY HOTEL LOYALTY PROGRAM\n" + points_str + status_str + rewards_str
