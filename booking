@@ -1,0 +1,202 @@
+"""
+Booking module for Royal Stay Hotel Management System.
+This module defines the Booking class which represents room reservations.
+"""
+
+from datetime import datetime
+
+class Booking:
+    """
+    Class representing a room booking in the hotel management system.
+    
+    Attributes:
+        _booking_id (int): Unique identifier for the booking
+        _guest: Guest who made the booking
+        _room: Room that is booked
+        _check_in_date (datetime): Date of check-in
+        _check_out_date (datetime): Date of check-out
+        _total_price (float): Total price for the stay
+        _status (str): Current status of the booking (Confirmed, Cancelled, Completed)
+        _services (list): List of services requested as part of the booking
+    """
+    
+    def __init__(self, booking_id, guest, room, check_in_date, check_out_date):
+        """
+        Initialize a new Booking object.
+        
+        Args:
+            booking_id (int): Unique identifier for the booking
+            guest: Guest who is making the booking
+            room: Room to be booked
+            check_in_date (datetime): Date of check-in
+            check_out_date (datetime): Date of check-out
+        """
+        self._booking_id = booking_id
+        self._guest = guest
+        self._room = room
+        self._check_in_date = check_in_date
+        self._check_out_date = check_out_date
+        self._total_price = self.calculate_total_price()
+        self._status = "Confirmed"
+        self._services = []
+        
+        # Update room availability
+        self._room.update_status(False)  # Mark room as unavailable
+        
+        # Add this booking to the guest's history
+        self._guest.add_booking(self)
+    
+    @property
+    def booking_id(self):
+        """Get the booking ID."""
+        return self._booking_id
+    
+    @property
+    def guest(self):
+        """Get the guest associated with the booking."""
+        return self._guest
+    
+    @property
+    def room(self):
+        """Get the room associated with the booking."""
+        return self._room
+    
+    @property
+    def check_in_date(self):
+        """Get the check-in date."""
+        return self._check_in_date
+    
+    @property
+    def check_out_date(self):
+        """Get the check-out date."""
+        return self._check_out_date
+    
+    @property
+    def total_price(self):
+        """Get the total price of the booking."""
+        return self._total_price
+    
+    @property
+    def status(self):
+        """Get the booking status."""
+        return self._status
+    
+    @property
+    def services(self):
+        """Get the services requested."""
+        return self._services
+    
+    def calculate_total_price(self):
+        """
+        Calculate the total price for the stay.
+        
+        This takes into account the room price, duration of stay, and any additional services.
+        
+        Returns:
+            float: The total price
+        """
+        # Calculate the number of nights
+        delta = self._check_out_date - self._check_in_date
+        nights = delta.days
+        
+        # Base price is room price multiplied by number of nights
+        base_price = self._room._price_per_night * nights
+        
+        # Add cost of any services
+        service_cost = sum(service._price for service in self._services) if self._services else 0
+        
+        return base_price + service_cost
+    
+    def cancel(self):
+        """
+        Cancel the booking.
+        
+        Returns:
+            bool: True if the booking was cancelled successfully
+        """
+        if self._status == "Confirmed":
+            self._status = "Cancelled"
+            # Make the room available again
+            self._room.update_status(True)
+            print(f"Booking {self._booking_id} has been cancelled")
+            return True
+        else:
+            print(f"Cannot cancel booking with status: {self._status}")
+            return False
+    
+    def complete(self):
+        """
+        Mark the booking as completed.
+        
+        Returns:
+            bool: True if the booking was completed successfully
+        """
+        if self._status == "Confirmed":
+            self._status = "Completed"
+            # Make the room available again
+            self._room.update_status(True)
+            print(f"Booking {self._booking_id} has been completed")
+            
+            # Award loyalty points to the guest (1 point per dollar spent)
+            points_earned = int(self._total_price)
+            self._guest.earn_points(points_earned)
+            
+            return True
+        else:
+            print(f"Cannot complete booking with status: {self._status}")
+            return False
+    
+    def send_confirmation(self):
+        """
+        Send a booking confirmation to the guest.
+        
+        Returns:
+            bool: True if the confirmation was sent successfully
+        """
+        # In a real system, this would send an email or notification
+        print("\n---------- BOOKING CONFIRMATION ----------")
+        print(f"Dear {self._guest.get_name()},")
+        print(f"Your booking at Royal Stay Hotel has been confirmed.")
+        print(f"Booking ID: {self._booking_id}")
+        print(f"Room: {self._room._room_number} ({self._room._room_type})")
+        print(f"Check-in: {self._check_in_date.strftime('%Y-%m-%d')}")
+        print(f"Check-out: {self._check_out_date.strftime('%Y-%m-%d')}")
+        print(f"Total Price: ${self._total_price:.2f}")
+        print("Thank you for choosing Royal Stay Hotel!")
+        print("----------------------------------------\n")
+        return True
+    
+    def add_service(self, service):
+        """
+        Add a service to the booking.
+        
+        Args:
+            service: Service object to add
+            
+        Returns:
+            bool: True if the service was added successfully
+        """
+        self._services.append(service)
+        # Recalculate the total price
+        self._total_price = self.calculate_total_price()
+        print(f"Service '{service._service_type}' added to Booking {self._booking_id}")
+        return True
+    
+    def __str__(self):
+        """
+        Return a string representation of the Booking object.
+        
+        Returns:
+            str: A string containing the booking details
+        """
+        service_str = ", ".join(s._service_type for s in self._services) if self._services else "None"
+        
+        return (f"Booking ID: {self._booking_id} - {self._status}\n"
+                f"Guest: {self._guest.get_name()}\n"
+                f"Room: {self._room._room_number} ({self._room._room_type})\n"
+                f"Check-in: {self._check_in_date.strftime('%Y-%m-%d')}\n"
+                f"Check-out: {self._check_out_date.strftime('%Y-%m-%d')}\n"
+                f"Services: {service_str}\n"
+                f"Total Price: ${self._total_price:.2f}")
+
+    def
