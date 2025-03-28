@@ -29,11 +29,11 @@ class Room:
             price_per_night (float): Cost per night for the room
         """
         # Protected attributes (accessible to child classes)
-        self._room_number = room_number
-        self._room_type = room_type
-        self._amenities = amenities if amenities else []
-        self._price_per_night = price_per_night
-        self._is_available = True  # New rooms are available by default
+        self._room_number = room_number  # this is just the room's number like 101 or whatever
+        self._room_type = room_type  # what kind of room it is - single, double, suite
+        self._amenities = amenities if amenities else []  # this is a conditional expression, pretty cool
+        self._price_per_night = price_per_night  # how much it costs to stay for one night
+        self._is_available = True  # New rooms are available by default - makes sense
     
     def update_status(self, is_available):
         """
@@ -45,10 +45,10 @@ class Room:
         Returns:
             bool: True if the update was successful
         """
-        self._is_available = is_available
-        status = "available" if is_available else "unavailable"
-        print(f"Room {self._room_number} is now {status}")
-        return True
+        self._is_available = is_available  # change whether the room is available or not
+        status = "available" if is_available else "unavailable"  # another conditional thingy
+        print(f"Room {self._room_number} is now {status}")  # let the user know what happened
+        return True  # I guess it always works so it returns True
     
     def update_price(self, price):
         """
@@ -60,9 +60,9 @@ class Room:
         Returns:
             bool: True if the update was successful
         """
-        self._price_per_night = price
-        print(f"Price for Room {self._room_number} updated to ${price:.2f} per night")
-        return True
+        self._price_per_night = price  # update the price to the new one
+        print(f"Price for Room {self._room_number} updated to ${price:.2f} per night")  # show the new price with 2 decimal places
+        return True  # again it always works I think
     
     def add_amenity(self, amenity):
         """
@@ -74,13 +74,13 @@ class Room:
         Returns:
             bool: True if the amenity was added successfully
         """
-        if amenity not in self._amenities:
-            self._amenities.append(amenity)
-            print(f"'{amenity}' added to Room {self._room_number}")
-            return True
+        if amenity not in self._amenities:  # check if the amenity is already there
+            self._amenities.append(amenity)  # add it to the list if it's not
+            print(f"'{amenity}' added to Room {self._room_number}")  # tell the user it worked
+            return True  # it worked so return True
         else:
-            print(f"'{amenity}' already exists in Room {self._room_number}")
-            return False
+            print(f"'{amenity}' already exists in Room {self._room_number}")  # tell the user it's already there
+            return False  # it didn't work so return False
     
     def remove_amenity(self, amenity):
         """
@@ -92,13 +92,13 @@ class Room:
         Returns:
             bool: True if the amenity was removed successfully
         """
-        if amenity in self._amenities:
-            self._amenities.remove(amenity)
-            print(f"'{amenity}' removed from Room {self._room_number}")
-            return True
+        if amenity in self._amenities:  # check if the amenity exists in the room
+            self._amenities.remove(amenity)  # take it out of the list
+            print(f"'{amenity}' removed from Room {self._room_number}")  # tell the user we removed it
+            return True  # success!
         else:
-            print(f"'{amenity}' not found in Room {self._room_number}")
-            return False
+            print(f"'{amenity}' not found in Room {self._room_number}")  # the amenity wasn't there
+            return False  # couldn't remove it so fail
     
     def __str__(self):
         """
@@ -107,9 +107,9 @@ class Room:
         Returns:
             str: A string containing the room details
         """
-        status = "Available" if self._is_available else "Unavailable"
-        amenities_str = ", ".join(self._amenities) if self._amenities else "None"
+        status = "Available" if self._is_available else "Unavailable"  # convert the boolean to text
+        amenities_str = ", ".join(self._amenities) if self._amenities else "None"  # join all amenities with commas
         
-        return (f"Room {self._room_number} ({self._room_type}) - {status}\n"
-                f"Price: ${self._price_per_night:.2f} per night\n"
-                f"Amenities: {amenities_str}")
+        return (f"Room {self._room_number} ({self._room_type}) - {status}\n"  # first line has basic info
+                f"Price: ${self._price_per_night:.2f} per night\n"  # second line shows the price
+                f"Amenities: {amenities_str}")  # third line lists all the amenities
