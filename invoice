@@ -1,0 +1,177 @@
+"""
+Invoice module for Royal Stay Hotel Management System.
+This module defines the Invoice class which represents billing documents.
+"""
+
+from datetime import datetime
+
+class Invoice:
+    """
+    Class representing an invoice in the hotel management system.
+    
+    Attributes:
+        _invoice_id (int): Unique identifier for the invoice
+        _booking: Associated booking
+        _invoice_date (datetime): Date and time of invoice generation
+        _subtotal (float): Base cost before tax and discounts
+        _tax (float): Tax amount
+        _discount (float): Discount amount
+        _final_amount (float): Final amount to be paid
+    """
+    
+    def __init__(self, invoice_id, booking):
+        """
+        Initialize a new Invoice object.
+        
+        Args:
+            invoice_id (int): Unique identifier for the invoice
+            booking: Associated booking
+        """
+        self._invoice_id = invoice_id
+        self._booking = booking
+        self._invoice_date = datetime.now()
+        self._subtotal = booking.total_price
+        self._tax = self._calculate_tax()
+        self._discount = 0.0
+        self._final_amount = self.calculate_total()
+    
+    @property
+    def invoice_id(self):
+        """Get the invoice ID."""
+        return self._invoice_id
+    
+    @property
+    def booking(self):
+        """Get the associated booking."""
+        return self._booking
+    
+    @property
+    def invoice_date(self):
+        """Get the invoice date."""
+        return self._invoice_date
+    
+    @property
+    def subtotal(self):
+        """Get the subtotal amount."""
+        return self._subtotal
+    
+    @property
+    def tax(self):
+        """Get the tax amount."""
+        return self._tax
+    
+    @property
+    def discount(self):
+        """Get the discount amount."""
+        return self._discount
+    
+    @property
+    def final_amount(self):
+        """Get the final amount."""
+        return self._final_amount
+    
+    def _calculate_tax(self, tax_rate=0.1):
+        """
+        Calculate tax amount based on subtotal.
+        
+        Args:
+            tax_rate (float, optional): Tax rate as a decimal. Defaults to 0.1 (10%).
+            
+        Returns:
+            float: Tax amount
+        """
+        return self._subtotal * tax_rate
+    
+    def calculate_total(self):
+        """
+        Calculate the final amount after tax and discounts.
+        
+        Returns:
+            float: Final amount
+        """
+        return self._subtotal + self._tax - self._discount
+    
+    def apply_discount(self, amount=0, percentage=0):
+        """
+        Apply a discount to the invoice.
+        
+        Args:
+            amount (float, optional): Flat discount amount
+            percentage (float, optional): Percentage discount (0-100)
+            
+        Returns:
+            float: New final amount after discount
+        """
+        if amount > 0:
+            self._discount = amount
+        elif percentage > 0:
+            self._discount = self._subtotal * (percentage / 100)
+        
+        self._final_amount = self.calculate_total()
+        print(f"Discount of ${self._discount:.2f} applied to Invoice {self._invoice_id}")
+        return self._final_amount
+    
+    def generate_invoice(self):
+        """
+        Generate a formatted invoice for the booking.
+        
+        Returns:
+            str: Formatted invoice text
+        """
+        # Calculate number of nights
+        nights = (self._booking.check_out_date - self._booking.check_in_date).days
+        
+        # Build the invoice text
+        invoice = "\n" + "=" * 50 + "\n"
+        invoice += "              ROYAL STAY HOTEL              \n"
+        invoice += "                  INVOICE                   \n"
+        invoice += "=" * 50 + "\n"
+        invoice += f"Invoice #: {self._invoice_id}\n"
+        invoice += f"Date: {self._invoice_date.strftime('%Y-%m-%d %H:%M')}\n"
+        invoice += f"Guest: {self._booking.guest.get_name()}\n"
+        invoice += f"Booking #: {self._booking.booking_id}\n"
+        invoice += "=" * 50 + "\n"
+        invoice += f"Room: {self._booking.room._room_number} ({self._booking.room._room_type})\n"
+        invoice += f"Check-in: {self._booking.check_in_date.strftime('%Y-%m-%d')}\n"
+        invoice += f"Check-out: {self._booking.check_out_date.strftime('%Y-%m-%d')}\n"
+        invoice += f"Number of nights: {nights}\n"
+        invoice += "-" * 50 + "\n"
+        invoice += f"Room charge: ${self._booking.room._price_per_night:.2f} x {nights} nights = ${self._booking.room._price_per_night * nights:.2f}\n"
+        
+        # Add services if any
+        if self._booking.services:
+            invoice += "\nAdditional Services:\n"
+            for service in self._booking.services:
+                invoice += f"- {service._service_type}: ${service._price:.2f}\n"
+        
+        invoice += "-" * 50 + "\n"
+        invoice += f"Subtotal: ${self._subtotal:.2f}\n"
+        invoice += f"Tax (10%): ${self._tax:.2f}\n"
+        
+        if self._discount > 0:
+            invoice += f"Discount: -${self._discount:.2f}\n"
+        
+        invoice += "=" * 50 + "\n"
+        invoice += f"TOTAL: ${self._final_amount:.2f}\n"
+        invoice += "=" * 50 + "\n"
+        invoice += "Thank you for staying at Royal Stay Hotel!\n"
+        invoice += "=" * 50 + "\n"
+        
+        print(invoice)
+        return invoice
+    
+    def __str__(self):
+        """
+        Return a string representation of the Invoice object.
+        
+        Returns:
+            str: A string containing the invoice details
+        """
+        return (f"Invoice ID: {self._invoice_id}\n"
+                f"Booking ID: {self._booking.booking_id}\n"
+                f"Guest: {self._booking.guest.get_name()}\n"
+                f"Date: {self._invoice_date.strftime('%Y-%m-%d')}\n"
+                f"Subtotal: ${self._subtotal:.2f}\n"
+                f"Tax: ${self._tax:.2f}\n"
+                f"Discount: ${self._discount:.2f}\n"
+                f"Total: ${self._final_amount:.2f}")
