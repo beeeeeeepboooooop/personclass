@@ -1,0 +1,126 @@
+"""
+LoyaltyProgram module for Royal Stay Hotel Management System.
+This module defines the LoyaltyProgram class which manages guest rewards.
+"""
+
+class LoyaltyProgram:
+    """
+    Class representing the hotel's loyalty program system.
+    
+    Attributes:
+        _points_scheme (dict): Mapping of spending categories to points earned per dollar
+        _status_thresholds (dict): Point thresholds for different loyalty statuses
+        _reward_options (dict): Available rewards and their point costs
+    """
+    
+    def __init__(self):
+        """
+        Initialize a new LoyaltyProgram object with default values.
+        """
+        # Define points earning scheme ($ spent to points earned)
+        self._points_scheme = {
+            "room": 1.0,  # 1 point per $1 spent on rooms
+            "service": 0.5,  # 0.5 points per $1 spent on services
+            "dining": 2.0,  # 2 points per $1 spent on dining
+        }
+        
+        # Define loyalty status thresholds
+        self._status_thresholds = {
+            "Standard": 0,
+            "Silver": 500,
+            "Gold": 2000,
+            "Platinum": 5000
+        }
+        
+        # Define reward options
+        self._reward_options = {
+            "free_night": {
+                "description": "Free Night Stay",
+                "points_required": 2500
+            },
+            "room_upgrade": {
+                "description": "Room Upgrade",
+                "points_required": 1000
+            },
+            "late_checkout": {
+                "description": "Late Checkout (until 4 PM)",
+                "points_required": 500
+            },
+            "spa_credit": {
+                "description": "$50 Spa Credit",
+                "points_required": 1500
+            },
+            "dining_credit": {
+                "description": "$25 Dining Credit",
+                "points_required": 750
+            }
+        }
+    
+    @property
+    def points_scheme(self):
+        """Get the points earning scheme."""
+        return self._points_scheme
+    
+    @property
+    def status_thresholds(self):
+        """Get the loyalty status thresholds."""
+        return self._status_thresholds
+    
+    @property
+    def reward_options(self):
+        """Get the available reward options."""
+        return self._reward_options
+    
+    def calculate_points(self, amount, category="room"):
+        """
+        Calculate loyalty points earned for a given spending amount.
+        
+        Args:
+            amount (float): Amount spent
+            category (str, optional): Spending category. Defaults to "room".
+            
+        Returns:
+            int: Points earned
+        """
+        if category not in self._points_scheme:
+            print(f"Invalid category: {category}. Using 'room' category.")
+            category = "room"
+        
+        points_per_dollar = self._points_scheme[category]
+        points_earned = int(amount * points_per_dollar)
+        
+        return points_earned
+    
+    def determine_status(self, points):
+        """
+        Determine loyalty status based on points.
+        
+        Args:
+            points (int): Current loyalty points
+            
+        Returns:
+            str: Loyalty status (Standard, Silver, Gold, Platinum)
+        """
+        status = "Standard"
+        
+        for level, threshold in self._status_thresholds.items():
+            if points >= threshold:
+                status = level
+        
+        return status
+    
+    def get_available_rewards(self, points):
+        """
+        Get a list of rewards available to a guest with the given points.
+        
+        Args:
+            points (int): Current loyalty points
+            
+        Returns:
+            dict: Available rewards
+        """
+        available_rewards = {}
+        
+        for reward_id, reward_info in self._reward_options.items():
+            if points >= reward_info["points_required"]:
+                available_rewards[reward_id] = reward_info
