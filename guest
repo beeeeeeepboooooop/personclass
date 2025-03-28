@@ -3,7 +3,7 @@ Guest module for Royal Stay Hotel Management System.
 This module defines the Guest class which inherits from Person.
 """
 
-from person import Person
+from person import Person  # importing the Person class we made earlier
 
 class Guest(Person):
     """
@@ -28,12 +28,12 @@ class Guest(Person):
             phone (str): Phone number of the guest
         """
         # Call the parent class constructor
-        super().__init__(person_id, name, email, phone)
+        super().__init__(person_id, name, email, phone)  # call the Person's init method to set up basic info
         
         # Guest-specific attributes
-        self._loyalty_points = 0
-        self._loyalty_status = "Standard"
-        self._booking_history = []
+        self._loyalty_points = 0  # start with zero points for new guests
+        self._loyalty_status = "Standard"  # everyone starts at Standard level
+        self._booking_history = []  # empty list to store their bookings
     
     def create_account(self):
         """
@@ -42,8 +42,8 @@ class Guest(Person):
         Returns:
             bool: True if the account was created successfully
         """
-        print(f"Account created successfully for {self._name}")
-        return True
+        print(f"Account created successfully for {self._name}")  # just prints a message that we made the account
+        return True  # always returns True since it can't really fail I guess
     
     def update_profile(self, name=None, email=None, phone=None):
         """
@@ -57,15 +57,15 @@ class Guest(Person):
         Returns:
             bool: True if the profile was updated successfully
         """
-        if name:
-            self.set_name(name)
-        if email:
-            self.set_email(email)
-        if phone:
-            self.set_phone(phone)
+        if name:  # checks if name parameter was provided
+            self.set_name(name)  # uses the parent class method to change the name
+        if email:  # checks if email parameter was provided
+            self.set_email(email)  # uses the parent class method to change the email
+        if phone:  # checks if phone parameter was provided
+            self.set_phone(phone)  # uses the parent class method to change the phone
         
-        print(f"Profile updated successfully for Guest: {self._name}")
-        return True
+        print(f"Profile updated successfully for Guest: {self._name}")  # tells us it worked
+        return True  # always successful I think
     
     def view_reservation_history(self):
         """
@@ -74,15 +74,15 @@ class Guest(Person):
         Returns:
             list: A list of booking objects in the guest's history
         """
-        if not self._booking_history:
-            print(f"No reservation history found for {self._name}")
-            return []
+        if not self._booking_history:  # checks if the booking history is empty
+            print(f"No reservation history found for {self._name}")  # lets you know there's nothing to show
+            return []  # returns empty list since there's no history
         
-        print(f"Reservation history for {self._name}:")
-        for booking in self._booking_history:
-            print(booking)
+        print(f"Reservation history for {self._name}:")  # heading for the history display
+        for booking in self._booking_history:  # loops through each booking in the history
+            print(booking)  # prints each booking (this calls the __str__ method of Booking)
         
-        return self._booking_history
+        return self._booking_history  # returns the full list of bookings
     
     def earn_points(self, points):
         """
@@ -94,10 +94,10 @@ class Guest(Person):
         Returns:
             int: Updated total points
         """
-        self._loyalty_points += points
-        self._update_loyalty_status()
-        print(f"{points} points added. New total: {self._loyalty_points} points")
-        return self._loyalty_points
+        self._loyalty_points += points  # adds the new points to their current total
+        self._update_loyalty_status()  # checks if they leveled up
+        print(f"{points} points added. New total: {self._loyalty_points} points")  # tells them their new point balance
+        return self._loyalty_points  # returns the updated total
     
     def redeem_points(self, points):
         """
@@ -109,14 +109,14 @@ class Guest(Person):
         Returns:
             bool: True if points were successfully redeemed
         """
-        if points <= self._loyalty_points:
-            self._loyalty_points -= points
-            self._update_loyalty_status()
-            print(f"{points} points redeemed. Remaining: {self._loyalty_points} points")
-            return True
+        if points <= self._loyalty_points:  # checks if they have enough points
+            self._loyalty_points -= points  # subtracts the points they're using
+            self._update_loyalty_status()  # checks if they dropped a level
+            print(f"{points} points redeemed. Remaining: {self._loyalty_points} points")  # tells them how many points they have left
+            return True  # it worked!
         else:
-            print(f"Insufficient points. Current balance: {self._loyalty_points} points")
-            return False
+            print(f"Insufficient points. Current balance: {self._loyalty_points} points")  # tells them they don't have enough points
+            return False  # it failed
     
     def _update_loyalty_status(self):
         """
@@ -125,20 +125,20 @@ class Guest(Person):
         This is a private helper method that is called when points are earned or redeemed.
         """
         # Define point thresholds for different status levels
-        if self._loyalty_points >= 5000:
-            new_status = "Platinum"
-        elif self._loyalty_points >= 2000:
-            new_status = "Gold"
-        elif self._loyalty_points >= 500:
-            new_status = "Silver"
-        else:
-            new_status = "Standard"
+        if self._loyalty_points >= 5000:  # if they have 5000+ points
+            new_status = "Platinum"  # they get Platinum status (super fancy!)
+        elif self._loyalty_points >= 2000:  # if they have 2000-4999 points
+            new_status = "Gold"  # they get Gold status
+        elif self._loyalty_points >= 500:  # if they have 500-1999 points
+            new_status = "Silver"  # they get Silver status
+        else:  # if they have 0-499 points
+            new_status = "Standard"  # they stay at Standard status
         
         # Update status if it has changed
-        if new_status != self._loyalty_status:
-            old_status = self._loyalty_status
-            self._loyalty_status = new_status
-            print(f"Loyalty status upgraded from {old_status} to {new_status}")
+        if new_status != self._loyalty_status:  # only do something if their status changed
+            old_status = self._loyalty_status  # remember what they were before
+            self._loyalty_status = new_status  # change to the new status
+            print(f"Loyalty status upgraded from {old_status} to {new_status}")  # let them know they leveled up or down
     
     def add_booking(self, booking):
         """
@@ -147,8 +147,8 @@ class Guest(Person):
         Args:
             booking: A Booking object to add to the history
         """
-        self._booking_history.append(booking)
-        print(f"Booking {booking.booking_id} added to {self._name}'s history")
+        self._booking_history.append(booking)  # adds the booking to their history list
+        print(f"Booking {booking.booking_id} added to {self._name}'s history")  # confirmation message
     
     def __str__(self):
         """
@@ -158,10 +158,10 @@ class Guest(Person):
             str: A string containing the guest details
         """
         # Get base information from parent class
-        base_info = super().__str__()
+        base_info = super().__str__()  # gets the string from the Person class first
         
         # Add guest-specific details
-        return (f"{base_info}\n"
-                f"Loyalty Status: {self._loyalty_status}\n"
-                f"Loyalty Points: {self._loyalty_points}\n"
-                f"Number of Bookings: {len(self._booking_history)}")
+        return (f"{base_info}\n"  # starts with the Person info
+                f"Loyalty Status: {self._loyalty_status}\n"  # adds loyalty level
+                f"Loyalty Points: {self._loyalty_points}\n"  # shows how many points they have
+                f"Number of Bookings: {len(self._booking_history)}")  # shows how many times they've stayed with us
