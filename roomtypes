@@ -1,0 +1,202 @@
+"""
+Room Types module for Royal Stay Hotel Management System.
+This module defines the different types of rooms available in the hotel.
+"""
+
+from room import Room
+
+class SingleRoom(Room):
+    """
+    Class representing a single room in the hotel.
+    
+    SingleRoom is a type of Room designed for one person, with specific attributes and methods.
+    
+    Attributes:
+        _is_single_bed (bool): Whether the room has a single bed
+        _max_occupancy (int): Maximum number of occupants allowed
+        _has_work_desk (bool): Whether the room has a work desk
+    """
+    
+    def __init__(self, room_number, amenities, price_per_night, is_single_bed=True, max_occupancy=1, has_work_desk=False):
+        """
+        Initialize a new SingleRoom object.
+        
+        Args:
+            room_number (int): Unique identifier for the room
+            amenities (list): List of amenities available in the room
+            price_per_night (float): Cost per night for the room
+            is_single_bed (bool, optional): Whether the room has a single bed. Defaults to True.
+            max_occupancy (int, optional): Maximum number of occupants allowed. Defaults to 1.
+            has_work_desk (bool, optional): Whether the room has a work desk. Defaults to False.
+        """
+        # Call the parent class constructor with room_type="Single"
+        super().__init__(room_number, "Single", amenities, price_per_night)
+        
+        # SingleRoom specific attributes
+        self._is_single_bed = is_single_bed
+        self._max_occupancy = max_occupancy
+        self._has_work_desk = has_work_desk
+    
+    def set_up_for_business(self):
+        """
+        Set up the room for business travelers.
+        
+        This method ensures the room has a work desk and adds business-friendly amenities.
+        
+        Returns:
+            bool: True if the setup was successful
+        """
+        if not self._has_work_desk:
+            self._has_work_desk = True
+            print(f"Work desk added to Room {self._room_number}")
+        
+        # Add business amenities if not already present
+        business_amenities = ["High-speed Wi-Fi", "Desk Lamp", "Power Outlets"]
+        for amenity in business_amenities:
+            self.add_amenity(amenity)
+        
+        print(f"Room {self._room_number} is now set up for business")
+        return True
+    
+    def __str__(self):
+        """
+        Return a string representation of the SingleRoom object.
+        
+        Returns:
+            str: A string containing the single room details
+        """
+        base_info = super().__str__()
+        bed_type = "Single bed" if self._is_single_bed else "Double bed"
+        work_desk = "Has work desk" if self._has_work_desk else "No work desk"
+        
+        return (f"{base_info}\n"
+                f"Type: Single Room\n"
+                f"Bed: {bed_type}\n"
+                f"Max Occupancy: {self._max_occupancy} person(s)\n"
+                f"Work Space: {work_desk}")
+
+
+class DoubleRoom(Room):
+    """
+    Class representing a double room in the hotel.
+    
+    DoubleRoom is a type of Room designed for two or more people, with specific attributes and methods.
+    
+    Attributes:
+        _number_of_beds (int): Number of beds in the room
+        _has_balcony (bool): Whether the room has a balcony
+        _is_connected (bool): Whether the room is connected to another room
+    """
+    
+    def __init__(self, room_number, amenities, price_per_night, number_of_beds=2, has_balcony=False, is_connected=False):
+        """
+        Initialize a new DoubleRoom object.
+        
+        Args:
+            room_number (int): Unique identifier for the room
+            amenities (list): List of amenities available in the room
+            price_per_night (float): Cost per night for the room
+            number_of_beds (int, optional): Number of beds in the room. Defaults to 2.
+            has_balcony (bool, optional): Whether the room has a balcony. Defaults to False.
+            is_connected (bool, optional): Whether the room is connected to another room. Defaults to False.
+        """
+        # Call the parent class constructor with room_type="Double"
+        super().__init__(room_number, "Double", amenities, price_per_night)
+        
+        # DoubleRoom specific attributes
+        self._number_of_beds = number_of_beds
+        self._has_balcony = has_balcony
+        self._is_connected = is_connected
+    
+    def separate_beds(self):
+        """
+        Separate the beds in the room (if applicable).
+        
+        Returns:
+            bool: True if the beds were separated successfully, False otherwise
+        """
+        if self._number_of_beds >= 2:
+            print(f"Beds in Room {self._room_number} have been separated")
+            return True
+        else:
+            print(f"Cannot separate beds in Room {self._room_number} - only one bed available")
+            return False
+    
+    def __str__(self):
+        """
+        Return a string representation of the DoubleRoom object.
+        
+        Returns:
+            str: A string containing the double room details
+        """
+        base_info = super().__str__()
+        balcony = "Has balcony" if self._has_balcony else "No balcony"
+        connected = "Connected room" if self._is_connected else "Not connected"
+        
+        return (f"{base_info}\n"
+                f"Type: Double Room\n"
+                f"Number of Beds: {self._number_of_beds}\n"
+                f"Features: {balcony}, {connected}")
+
+
+class SuiteRoom(Room):
+    """
+    Class representing a suite room in the hotel.
+    
+    SuiteRoom is a premium type of Room with multiple rooms and special amenities.
+    
+    Attributes:
+        _number_of_rooms (int): Number of separate rooms in the suite
+        _has_kitchen (bool): Whether the suite has a kitchen
+        _has_jacuzzi (bool): Whether the suite has a jacuzzi
+    """
+    
+    def __init__(self, room_number, amenities, price_per_night, number_of_rooms=2, has_kitchen=False, has_jacuzzi=False):
+        """
+        Initialize a new SuiteRoom object.
+        
+        Args:
+            room_number (int): Unique identifier for the room
+            amenities (list): List of amenities available in the room
+            price_per_night (float): Cost per night for the room
+            number_of_rooms (int, optional): Number of separate rooms in the suite. Defaults to 2.
+            has_kitchen (bool, optional): Whether the suite has a kitchen. Defaults to False.
+            has_jacuzzi (bool, optional): Whether the suite has a jacuzzi. Defaults to False.
+        """
+        # Call the parent class constructor with room_type="Suite"
+        super().__init__(room_number, "Suite", amenities, price_per_night)
+        
+        # SuiteRoom specific attributes
+        self._number_of_rooms = number_of_rooms
+        self._has_kitchen = has_kitchen
+        self._has_jacuzzi = has_jacuzzi
+    
+    def arrange_special_service(self):
+        """
+        Arrange special services for the suite.
+        
+        Returns:
+            bool: True if special services were arranged successfully
+        """
+        print(f"Special services arranged for Suite {self._room_number}:")
+        print("  - Daily housekeeping")
+        print("  - Welcome champagne")
+        print("  - Fresh flowers")
+        print("  - Concierge service")
+        return True
+    
+    def __str__(self):
+        """
+        Return a string representation of the SuiteRoom object.
+        
+        Returns:
+            str: A string containing the suite room details
+        """
+        base_info = super().__str__()
+        kitchen = "Has kitchen" if self._has_kitchen else "No kitchen"
+        jacuzzi = "Has jacuzzi" if self._has_jacuzzi else "No jacuzzi"
+        
+        return (f"{base_info}\n"
+                f"Type: Suite\n"
+                f"Number of Rooms: {self._number_of_rooms}\n"
+                f"Premium Features: {kitchen}, {jacuzzi}")
