@@ -1,0 +1,199 @@
+"""
+Employee module for Royal Stay Hotel Management System.
+This module defines the Employee and Manager classes that inherit from Person.
+"""
+
+from datetime import datetime
+from person import Person
+
+class Employee(Person):
+    """
+    Class representing an employee in the hotel management system.
+    
+    Employee inherits from Person and adds attributes and methods specific to hotel staff.
+    
+    Attributes:
+        _position (str): Job position/title of the employee
+        _salary (float): Annual salary of the employee
+        _joining_date (datetime): Date when the employee joined the hotel
+    """
+    
+    def __init__(self, person_id, name, email, phone, position, salary):
+        """
+        Initialize a new Employee object.
+        
+        Args:
+            person_id (int): Unique identifier for the employee
+            name (str): Full name of the employee
+            email (str): Email address of the employee
+            phone (str): Phone number of the employee
+            position (str): Job position/title
+            salary (float): Annual salary
+        """
+        # Call the parent class constructor
+        super().__init__(person_id, name, email, phone)
+        
+        # Employee-specific attributes
+        self._position = position
+        self._salary = salary
+        self._joining_date = datetime.now()
+    
+    def assign_tasks(self, tasks):
+        """
+        Assign tasks to the employee.
+        
+        Args:
+            tasks (list): List of task descriptions
+            
+        Returns:
+            bool: True if tasks were assigned successfully
+        """
+        print(f"Tasks assigned to {self._name} ({self._position}):")
+        for i, task in enumerate(tasks, 1):
+            print(f"  {i}. {task}")
+        return True
+    
+    def process_request(self, request):
+        """
+        Process a guest request.
+        
+        Args:
+            request (str): Description of the request
+            
+        Returns:
+            bool: True if the request was processed successfully
+        """
+        print(f"{self._name} ({self._position}) is processing request: {request}")
+        print("Request processed successfully.")
+        return True
+    
+    def __str__(self):
+        """
+        Return a string representation of the Employee object.
+        
+        Returns:
+            str: A string containing the employee details
+        """
+        # Get base information from parent class
+        base_info = super().__str__()
+        
+        # Add employee-specific details
+        return (f"{base_info}\n"
+                f"Position: {self._position}\n"
+                f"Salary: ${self._salary:.2f}\n"
+                f"Joined: {self._joining_date.strftime('%Y-%m-%d')}")
+
+
+class Manager(Employee):
+    """
+    Class representing a manager in the hotel management system.
+    
+    Manager inherits from Employee and adds attributes and methods specific to management staff.
+    
+    Attributes:
+        _department (str): Department managed by the manager
+        _subordinates (list): List of employees supervised by the manager
+    """
+    
+    def __init__(self, person_id, name, email, phone, salary, department):
+        """
+        Initialize a new Manager object.
+        
+        Args:
+            person_id (int): Unique identifier for the manager
+            name (str): Full name of the manager
+            email (str): Email address of the manager
+            phone (str): Phone number of the manager
+            salary (float): Annual salary
+            department (str): Department managed
+        """
+        # Call the parent class constructor with position="Manager"
+        super().__init__(person_id, name, email, phone, f"{department} Manager", salary)
+        
+        # Manager-specific attributes
+        self._department = department
+        self._subordinates = []
+    
+    def add_subordinate(self, employee):
+        """
+        Add an employee to the manager's team.
+        
+        Args:
+            employee (Employee): Employee to add as subordinate
+            
+        Returns:
+            bool: True if the employee was added successfully
+        """
+        if employee not in self._subordinates:
+            self._subordinates.append(employee)
+            print(f"{employee.get_name()} added to {self._name}'s team in {self._department} department")
+            return True
+        else:
+            print(f"{employee.get_name()} is already in {self._name}'s team")
+            return False
+    
+    def remove_subordinate(self, employee):
+        """
+        Remove an employee from the manager's team.
+        
+        Args:
+            employee (Employee): Employee to remove from subordinates
+            
+        Returns:
+            bool: True if the employee was removed successfully
+        """
+        if employee in self._subordinates:
+            self._subordinates.remove(employee)
+            print(f"{employee.get_name()} removed from {self._name}'s team")
+            return True
+        else:
+            print(f"{employee.get_name()} is not in {self._name}'s team")
+            return False
+    
+    def approve_budget(self, amount, purpose):
+        """
+        Approve a budget request.
+        
+        Args:
+            amount (float): Amount of budget requested
+            purpose (str): Purpose of the budget
+            
+        Returns:
+            bool: True if the budget was approved
+        """
+        print(f"Budget Request: ${amount:.2f} for {purpose}")
+        print(f"Approved by: {self._name}, {self._department} Manager")
+        return True
+    
+    def evaluate_staff(self, employee, rating, comments):
+        """
+        Evaluate the performance of a staff member.
+        
+        Args:
+            employee (Employee): Employee to evaluate
+            rating (int): Performance rating (1-5)
+            comments (str): Evaluation comments
+            
+        Returns:
+            bool: True if the evaluation was completed successfully
+        """
+        print(f"Performance Evaluation for {employee.get_name()}:")
+        print(f"Rating: {rating}/5")
+        print(f"Comments: {comments}")
+        print(f"Evaluated by: {self._name}, {self._department} Manager")
+        return True
+    
+    def __str__(self):
+        """
+        Return a string representation of the Manager object.
+        
+        Returns:
+            str: A string containing the manager details
+        """
+        # Get base information from parent class
+        base_info = super().__str__()
+        
+        # Add manager-specific details
+        return (f"{base_info}\n"
+                f"Department: {self._department}\n"
+                f"Team Size: {len(self._subordinates)} employee(s)")
