@@ -3,7 +3,7 @@ Room Types module for Royal Stay Hotel Management System.
 This module defines the different types of rooms available in the hotel.
 """
 
-from room import Room
+from room import Room  # import the Room class that we made before
 
 class SingleRoom(Room):
     """
@@ -30,12 +30,12 @@ class SingleRoom(Room):
             has_work_desk (bool, optional): Whether the room has a work desk. Defaults to False.
         """
         # Call the parent class constructor with room_type="Single"
-        super().__init__(room_number, "Single", amenities, price_per_night)
+        super().__init__(room_number, "Single", amenities, price_per_night)  # this calls the Room class's __init__ method which is pretty cool
         
         # SingleRoom specific attributes
-        self._is_single_bed = is_single_bed
-        self._max_occupancy = max_occupancy
-        self._has_work_desk = has_work_desk
+        self._is_single_bed = is_single_bed  # most singles have a single bed but I guess some don't
+        self._max_occupancy = max_occupancy  # usually just 1 person allowed
+        self._has_work_desk = has_work_desk  # some rooms have desks for working
     
     def set_up_for_business(self):
         """
@@ -46,17 +46,17 @@ class SingleRoom(Room):
         Returns:
             bool: True if the setup was successful
         """
-        if not self._has_work_desk:
-            self._has_work_desk = True
-            print(f"Work desk added to Room {self._room_number}")
+        if not self._has_work_desk:  # check if there's no desk yet
+            self._has_work_desk = True  # add a desk to the room
+            print(f"Work desk added to Room {self._room_number}")  # tell the user we added a desk
         
         # Add business amenities if not already present
-        business_amenities = ["High-speed Wi-Fi", "Desk Lamp", "Power Outlets"]
-        for amenity in business_amenities:
-            self.add_amenity(amenity)
+        business_amenities = ["High-speed Wi-Fi", "Desk Lamp", "Power Outlets"]  # list of stuff business people need
+        for amenity in business_amenities:  # loop through each amenity
+            self.add_amenity(amenity)  # add it to the room using the parent class method
         
-        print(f"Room {self._room_number} is now set up for business")
-        return True
+        print(f"Room {self._room_number} is now set up for business")  # tell the user it worked
+        return True  # everything went ok
     
     def __str__(self):
         """
@@ -65,15 +65,15 @@ class SingleRoom(Room):
         Returns:
             str: A string containing the single room details
         """
-        base_info = super().__str__()
-        bed_type = "Single bed" if self._is_single_bed else "Double bed"
-        work_desk = "Has work desk" if self._has_work_desk else "No work desk"
+        base_info = super().__str__()  # get the string from the parent Room class
+        bed_type = "Single bed" if self._is_single_bed else "Double bed"  # figure out what kind of bed
+        work_desk = "Has work desk" if self._has_work_desk else "No work desk"  # do we have a desk?
         
-        return (f"{base_info}\n"
-                f"Type: Single Room\n"
-                f"Bed: {bed_type}\n"
-                f"Max Occupancy: {self._max_occupancy} person(s)\n"
-                f"Work Space: {work_desk}")
+        return (f"{base_info}\n"  # start with the basic Room info
+                f"Type: Single Room\n"  # specify it's a single room
+                f"Bed: {bed_type}\n"  # what kind of bed it has
+                f"Max Occupancy: {self._max_occupancy} person(s)\n"  # how many people can stay
+                f"Work Space: {work_desk}")  # whether it has a desk or not
 
 
 class DoubleRoom(Room):
@@ -101,12 +101,12 @@ class DoubleRoom(Room):
             is_connected (bool, optional): Whether the room is connected to another room. Defaults to False.
         """
         # Call the parent class constructor with room_type="Double"
-        super().__init__(room_number, "Double", amenities, price_per_night)
+        super().__init__(room_number, "Double", amenities, price_per_night)  # calling the parent constructor like before
         
         # DoubleRoom specific attributes
-        self._number_of_beds = number_of_beds
-        self._has_balcony = has_balcony
-        self._is_connected = is_connected
+        self._number_of_beds = number_of_beds  # could be 2 twins or 1 king or whatever
+        self._has_balcony = has_balcony  # fancy rooms might have a balcony
+        self._is_connected = is_connected  # some rooms connect to others for families
     
     def separate_beds(self):
         """
@@ -115,12 +115,12 @@ class DoubleRoom(Room):
         Returns:
             bool: True if the beds were separated successfully, False otherwise
         """
-        if self._number_of_beds >= 2:
-            print(f"Beds in Room {self._room_number} have been separated")
-            return True
+        if self._number_of_beds >= 2:  # check if there are at least 2 beds to separate
+            print(f"Beds in Room {self._room_number} have been separated")  # tell the user we did it
+            return True  # it worked
         else:
-            print(f"Cannot separate beds in Room {self._room_number} - only one bed available")
-            return False
+            print(f"Cannot separate beds in Room {self._room_number} - only one bed available")  # explain why it didn't work
+            return False  # it failed
     
     def __str__(self):
         """
@@ -129,14 +129,14 @@ class DoubleRoom(Room):
         Returns:
             str: A string containing the double room details
         """
-        base_info = super().__str__()
-        balcony = "Has balcony" if self._has_balcony else "No balcony"
-        connected = "Connected room" if self._is_connected else "Not connected"
+        base_info = super().__str__()  # get string from parent class again
+        balcony = "Has balcony" if self._has_balcony else "No balcony"  # check for balcony
+        connected = "Connected room" if self._is_connected else "Not connected"  # is it connected to another room?
         
-        return (f"{base_info}\n"
-                f"Type: Double Room\n"
-                f"Number of Beds: {self._number_of_beds}\n"
-                f"Features: {balcony}, {connected}")
+        return (f"{base_info}\n"  # basic room info first 
+                f"Type: Double Room\n"  # specify it's a double room
+                f"Number of Beds: {self._number_of_beds}\n"  # how many beds
+                f"Features: {balcony}, {connected}")  # extra features
 
 
 class SuiteRoom(Room):
@@ -164,12 +164,12 @@ class SuiteRoom(Room):
             has_jacuzzi (bool, optional): Whether the suite has a jacuzzi. Defaults to False.
         """
         # Call the parent class constructor with room_type="Suite"
-        super().__init__(room_number, "Suite", amenities, price_per_night)
+        super().__init__(room_number, "Suite", amenities, price_per_night)  # parent constructor again but for Suite
         
         # SuiteRoom specific attributes
-        self._number_of_rooms = number_of_rooms
-        self._has_kitchen = has_kitchen
-        self._has_jacuzzi = has_jacuzzi
+        self._number_of_rooms = number_of_rooms  # how many separate rooms in the suite - like bedroom + living room
+        self._has_kitchen = has_kitchen  # some fancy suites have kitchens
+        self._has_jacuzzi = has_jacuzzi  # super fancy ones have jacuzzis which sounds awesome
     
     def arrange_special_service(self):
         """
@@ -178,12 +178,12 @@ class SuiteRoom(Room):
         Returns:
             bool: True if special services were arranged successfully
         """
-        print(f"Special services arranged for Suite {self._room_number}:")
-        print("  - Daily housekeeping")
-        print("  - Welcome champagne")
-        print("  - Fresh flowers")
-        print("  - Concierge service")
-        return True
+        print(f"Special services arranged for Suite {self._room_number}:")  # heading for the services
+        print("  - Daily housekeeping")  # they clean your room every day
+        print("  - Welcome champagne")  # free champagne when you arrive!
+        print("  - Fresh flowers")  # flowers in the room
+        print("  - Concierge service")  # someone to help you with whatever you need
+        return True  # always works I guess
     
     def __str__(self):
         """
@@ -192,9 +192,14 @@ class SuiteRoom(Room):
         Returns:
             str: A string containing the suite room details
         """
-        base_info = super().__str__()
-        kitchen = "Has kitchen" if self._has_kitchen else "No kitchen"
-        jacuzzi = "Has jacuzzi" if self._has_jacuzzi else "No jacuzzi"
+        base_info = super().__str__()  # get parent class info
+        kitchen = "Has kitchen" if self._has_kitchen else "No kitchen"  # check for kitchen
+        jacuzzi = "Has jacuzzi" if self._has_jacuzzi else "No jacuzzi"  # check for jacuzzi
+        
+        return (f"{base_info}\n"  # basic room info
+                f"Type: Suite\n"  # it's a suite
+                f"Number of Rooms: {self._number_of_rooms}\n"  # how many rooms in the suite
+                f"Premium Features: {kitchen}, {jacuzzi}")  # the fancy stuff it has
         
         return (f"{base_info}\n"
                 f"Type: Suite\n"
