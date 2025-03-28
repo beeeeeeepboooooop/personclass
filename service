@@ -1,0 +1,165 @@
+"""
+Service module for Royal Stay Hotel Management System.
+This module defines the Service class which represents additional services.
+"""
+
+from datetime import datetime
+
+class Service:
+    """
+    Class representing a service in the hotel management system.
+    
+    Attributes:
+        _service_id (int): Unique identifier for the service
+        _service_type (str): Type of service (e.g., Room Service, Spa, Airport Transfer)
+        _description (str): Detailed description of the service
+        _price (float): Cost of the service
+        _status (str): Current status of the service (Requested, In Progress, Completed, Cancelled)
+        _request_time (datetime): Time when the service was requested
+        _completion_time (datetime): Time when the service was completed
+    """
+    
+    def __init__(self, service_id, service_type, description, price):
+        """
+        Initialize a new Service object.
+        
+        Args:
+            service_id (int): Unique identifier for the service
+            service_type (str): Type of service
+            description (str): Detailed description of the service
+            price (float): Cost of the service
+        """
+        self._service_id = service_id
+        self._service_type = service_type
+        self._description = description
+        self._price = price
+        self._status = "Requested"
+        self._request_time = datetime.now()
+        self._completion_time = None
+    
+    @property
+    def service_id(self):
+        """Get the service ID."""
+        return self._service_id
+    
+    @property
+    def service_type(self):
+        """Get the service type."""
+        return self._service_type
+    
+    @property
+    def description(self):
+        """Get the service description."""
+        return self._description
+    
+    @description.setter
+    def description(self, value):
+        """Set the service description."""
+        self._description = value
+    
+    @property
+    def price(self):
+        """Get the service price."""
+        return self._price
+    
+    @price.setter
+    def price(self, value):
+        """Set the service price."""
+        self._price = value
+    
+    @property
+    def status(self):
+        """Get the service status."""
+        return self._status
+    
+    @property
+    def request_time(self):
+        """Get the request time."""
+        return self._request_time
+    
+    @property
+    def completion_time(self):
+        """Get the completion time."""
+        return self._completion_time
+    
+    def create_request(self, guest, booking=None):
+        """
+        Create a service request.
+        
+        Args:
+            guest: Guest requesting the service
+            booking (optional): Associated booking if applicable
+            
+        Returns:
+            bool: True if the request was created successfully
+        """
+        print(f"Service Request created:")
+        print(f"Service: {self._service_type}")
+        print(f"Description: {self._description}")
+        print(f"Requested by: {guest.get_name()}")
+        print(f"Price: ${self._price:.2f}")
+        
+        if booking:
+            booking.add_service(self)
+            print(f"Added to Booking {booking.booking_id}")
+        
+        return True
+    
+    def update_status(self, new_status):
+        """
+        Update the status of the service.
+        
+        Args:
+            new_status (str): New status (Requested, In Progress, Completed, Cancelled)
+            
+        Returns:
+            bool: True if the status was updated successfully
+        """
+        valid_statuses = ["Requested", "In Progress", "Completed", "Cancelled"]
+        
+        if new_status not in valid_statuses:
+            print(f"Invalid status: {new_status}")
+            return False
+        
+        old_status = self._status
+        self._status = new_status
+        
+        print(f"Service {self._service_id} status updated: {old_status} -> {new_status}")
+        
+        # If the service is completed, record the completion time
+        if new_status == "Completed":
+            self._completion_time = datetime.now()
+        
+        return True
+    
+    def calculate_price(self, quantity=1, additional_fee=0):
+        """
+        Calculate the total price for the service.
+        
+        Args:
+            quantity (int, optional): Quantity of the service
+            additional_fee (float, optional): Additional fees
+            
+        Returns:
+            float: The total price
+        """
+        total_price = (self._price * quantity) + additional_fee
+        return total_price
+    
+    def __str__(self):
+        """
+        Return a string representation of the Service object.
+        
+        Returns:
+            str: A string containing the service details
+        """
+        status_info = f"{self._status}"
+        if self._completion_time:
+            status_info += f" (Completed on {self._completion_time.strftime('%Y-%m-%d %H:%M')})"
+        
+        return (f"Service ID: {self._service_id}\n"
+                f"Type: {self._service_type}\n"
+                f"Description: {self._description}\n"
+                f"Price: ${self._price:.2f}\n"
+                f"Status: {status_info}\n"
+                f"Requested on: {self._request_time.strftime('%Y-%m-%d %H:%M')}")
