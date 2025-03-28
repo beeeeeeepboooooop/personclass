@@ -1,0 +1,167 @@
+"""
+Guest module for Royal Stay Hotel Management System.
+This module defines the Guest class which inherits from Person.
+"""
+
+from person import Person
+
+class Guest(Person):
+    """
+    Class representing a guest in the hotel management system.
+    
+    Guest inherits from Person and adds attributes and methods specific to hotel guests.
+    
+    Attributes:
+        _loyalty_points (int): Number of loyalty points accumulated by the guest
+        _loyalty_status (str): Status level in the loyalty program (Standard, Silver, Gold, Platinum)
+        _booking_history (list): List of past and current bookings made by the guest
+    """
+    
+    def __init__(self, person_id, name, email, phone):
+        """
+        Initialize a new Guest object.
+        
+        Args:
+            person_id (int): Unique identifier for the guest
+            name (str): Full name of the guest
+            email (str): Email address of the guest
+            phone (str): Phone number of the guest
+        """
+        # Call the parent class constructor
+        super().__init__(person_id, name, email, phone)
+        
+        # Guest-specific attributes
+        self._loyalty_points = 0
+        self._loyalty_status = "Standard"
+        self._booking_history = []
+    
+    def create_account(self):
+        """
+        Create a new guest account in the system.
+        
+        Returns:
+            bool: True if the account was created successfully
+        """
+        print(f"Account created successfully for {self._name}")
+        return True
+    
+    def update_profile(self, name=None, email=None, phone=None):
+        """
+        Update the guest's profile information.
+        
+        Args:
+            name (str, optional): New name for the guest
+            email (str, optional): New email for the guest
+            phone (str, optional): New phone number for the guest
+            
+        Returns:
+            bool: True if the profile was updated successfully
+        """
+        if name:
+            self.set_name(name)
+        if email:
+            self.set_email(email)
+        if phone:
+            self.set_phone(phone)
+        
+        print(f"Profile updated successfully for Guest: {self._name}")
+        return True
+    
+    def view_reservation_history(self):
+        """
+        View the guest's reservation history.
+        
+        Returns:
+            list: A list of booking objects in the guest's history
+        """
+        if not self._booking_history:
+            print(f"No reservation history found for {self._name}")
+            return []
+        
+        print(f"Reservation history for {self._name}:")
+        for booking in self._booking_history:
+            print(booking)
+        
+        return self._booking_history
+    
+    def earn_points(self, points):
+        """
+        Add loyalty points to the guest's account and update status if needed.
+        
+        Args:
+            points (int): Number of points to add
+            
+        Returns:
+            int: Updated total points
+        """
+        self._loyalty_points += points
+        self._update_loyalty_status()
+        print(f"{points} points added. New total: {self._loyalty_points} points")
+        return self._loyalty_points
+    
+    def redeem_points(self, points):
+        """
+        Redeem loyalty points from the guest's account.
+        
+        Args:
+            points (int): Number of points to redeem
+            
+        Returns:
+            bool: True if points were successfully redeemed
+        """
+        if points <= self._loyalty_points:
+            self._loyalty_points -= points
+            self._update_loyalty_status()
+            print(f"{points} points redeemed. Remaining: {self._loyalty_points} points")
+            return True
+        else:
+            print(f"Insufficient points. Current balance: {self._loyalty_points} points")
+            return False
+    
+    def _update_loyalty_status(self):
+        """
+        Update the guest's loyalty status based on their points.
+        
+        This is a private helper method that is called when points are earned or redeemed.
+        """
+        # Define point thresholds for different status levels
+        if self._loyalty_points >= 5000:
+            new_status = "Platinum"
+        elif self._loyalty_points >= 2000:
+            new_status = "Gold"
+        elif self._loyalty_points >= 500:
+            new_status = "Silver"
+        else:
+            new_status = "Standard"
+        
+        # Update status if it has changed
+        if new_status != self._loyalty_status:
+            old_status = self._loyalty_status
+            self._loyalty_status = new_status
+            print(f"Loyalty status upgraded from {old_status} to {new_status}")
+    
+    def add_booking(self, booking):
+        """
+        Add a booking to the guest's history.
+        
+        Args:
+            booking: A Booking object to add to the history
+        """
+        self._booking_history.append(booking)
+        print(f"Booking {booking.booking_id} added to {self._name}'s history")
+    
+    def __str__(self):
+        """
+        Return a string representation of the Guest object.
+        
+        Returns:
+            str: A string containing the guest details
+        """
+        # Get base information from parent class
+        base_info = super().__str__()
+        
+        # Add guest-specific details
+        return (f"{base_info}\n"
+                f"Loyalty Status: {self._loyalty_status}\n"
+                f"Loyalty Points: {self._loyalty_points}\n"
+                f"Number of Bookings: {len(self._booking_history)}")
