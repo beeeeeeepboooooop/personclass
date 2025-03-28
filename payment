@@ -1,0 +1,146 @@
+"""
+Payment module for Royal Stay Hotel Management System.
+This module defines the Payment class which represents financial transactions.
+"""
+
+from datetime import datetime
+
+class Payment:
+    """
+    Class representing a payment in the hotel management system.
+    
+    Attributes:
+        _payment_id (int): Unique identifier for the payment
+        _booking: Associated booking
+        _amount (float): Amount paid
+        _payment_date (datetime): Date and time of payment
+        _payment_method (str): Method of payment (e.g., Credit Card, Cash, Mobile Wallet)
+        _status (str): Current status of the payment (Pending, Completed, Refunded)
+    """
+    
+    def __init__(self, payment_id, booking, amount, payment_method):
+        """
+        Initialize a new Payment object.
+        
+        Args:
+            payment_id (int): Unique identifier for the payment
+            booking: Associated booking
+            amount (float): Amount to be paid
+            payment_method (str): Method of payment
+        """
+        self._payment_id = payment_id
+        self._booking = booking
+        self._amount = amount
+        self._payment_date = datetime.now()
+        self._payment_method = payment_method
+        self._status = "Pending"
+    
+    @property
+    def payment_id(self):
+        """Get the payment ID."""
+        return self._payment_id
+    
+    @property
+    def booking(self):
+        """Get the associated booking."""
+        return self._booking
+    
+    @property
+    def amount(self):
+        """Get the payment amount."""
+        return self._amount
+    
+    @property
+    def payment_date(self):
+        """Get the payment date."""
+        return self._payment_date
+    
+    @property
+    def payment_method(self):
+        """Get the payment method."""
+        return self._payment_method
+    
+    @property
+    def status(self):
+        """Get the payment status."""
+        return self._status
+    
+    def process_payment(self):
+        """
+        Process the payment.
+        
+        In a real system, this would interact with a payment gateway.
+        
+        Returns:
+            bool: True if the payment was processed successfully
+        """
+        # In a real system, this would include payment gateway integration
+        self._status = "Completed"
+        print(f"Payment of ${self._amount:.2f} processed successfully via {self._payment_method}")
+        print(f"Payment ID: {self._payment_id}")
+        print(f"Booking ID: {self._booking.booking_id}")
+        print(f"Guest: {self._booking.guest.get_name()}")
+        return True
+    
+    def generate_receipt(self):
+        """
+        Generate a receipt for the payment.
+        
+        Returns:
+            str: Formatted receipt text
+        """
+        receipt = (
+            "\n---------- PAYMENT RECEIPT ----------\n"
+            f"Payment ID: {self._payment_id}\n"
+            f"Date: {self._payment_date.strftime('%Y-%m-%d %H:%M')}\n"
+            f"Guest: {self._booking.guest.get_name()}\n"
+            f"Booking ID: {self._booking.booking_id}\n"
+            f"Amount: ${self._amount:.2f}\n"
+            f"Method: {self._payment_method}\n"
+            f"Status: {self._status}\n"
+            "-------------------------------------\n"
+        )
+        print(receipt)
+        return receipt
+    
+    def refund(self, amount=None):
+        """
+        Process a refund for the payment.
+        
+        Args:
+            amount (float, optional): Amount to refund. If None, refund the full amount.
+            
+        Returns:
+            bool: True if the refund was processed successfully
+        """
+        if self._status != "Completed":
+            print(f"Cannot refund payment with status {self._status}")
+            return False
+        
+        refund_amount = amount if amount else self._amount
+        
+        if refund_amount > self._amount:
+            print(f"Refund amount (${refund_amount:.2f}) exceeds payment amount (${self._amount:.2f})")
+            return False
+        
+        self._status = "Refunded"
+        print(f"Refund of ${refund_amount:.2f} processed successfully")
+        print(f"Payment ID: {self._payment_id}")
+        print(f"Booking ID: {self._booking.booking_id}")
+        print(f"Guest: {self._booking.guest.get_name()}")
+        return True
+    
+    def __str__(self):
+        """
+        Return a string representation of the Payment object.
+        
+        Returns:
+            str: A string containing the payment details
+        """
+        return (f"Payment ID: {self._payment_id}\n"
+                f"Booking ID: {self._booking.booking_id}\n"
+                f"Guest: {self._booking.guest.get_name()}\n"
+                f"Amount: ${self._amount:.2f}\n"
+                f"Method: {self._payment_method}\n"
+                f"Date: {self._payment_date.strftime('%Y-%m-%d %H:%M')}\n"
+                f"Status: {self._status}")
